@@ -27,23 +27,23 @@
 - [x] Bilingual support via system prompt (Hebrew + English)
 
 ### M4 — Flows + Evaluation
-- [ ] Flow A: Medication Info (Customer Service)
-- [ ] Flow B: Inventory Check (Inventory Control)
-- [ ] Flow C: Prescription Status/Refill (Prescription Management)
-- [ ] Test cases (EN + HE coverage)
-- [ ] Policy adherence tests (refuse advice/diagnosis)
+- [x] Flow A: Medication Info (Customer Service) - documented in docs/FLOWS.md, tested
+- [x] Flow B: Inventory Check (Inventory Control) - documented in docs/FLOWS.md, tested
+- [x] Flow C: Prescription Status/Refill (Prescription Management) - documented in docs/FLOWS.md, tested
+- [x] Test cases (EN + HE coverage) - documented in docs/EVAL_PLAN.md
+- [x] Policy adherence tests (refuse advice/diagnosis) - tested and verified
 
 ### M5 — Packaging + Evidence
 - [ ] Dockerfile
 - [ ] README with run instructions
-- [ ] 2-3 screenshots of conversations (at least one Hebrew)
+- [x] 2-3 screenshots of conversations (docs/screenshots/) - includes Hebrew
 
 ## Deliverables Checklist
 
 - [ ] README.md with architecture + Docker run instructions
-- [ ] 3 multi-step flow demonstrations
-- [ ] 2-3 screenshots of conversations
-- [ ] Evaluation plan for agent flows (docs/EVAL_PLAN.md)
+- [x] 3 multi-step flow demonstrations (docs/FLOWS.md)
+- [x] 2-3 screenshots of conversations (docs/screenshots/)
+- [x] Evaluation plan for agent flows (docs/EVAL_PLAN.md)
 - [ ] Dockerfile
 
 ## Technical Requirements
@@ -54,5 +54,5 @@
 - [x] At least 3 tools with clear API design
 - [x] Synthetic DB (10 users, 5 medications)
 - [x] UI to interact with the agent
-- [ ] At least 3 distinct multi-step flows
+- [x] At least 3 distinct multi-step flows (docs/FLOWS.md)
 - [x] Policy enforcement (facts-only, no medical advice)
