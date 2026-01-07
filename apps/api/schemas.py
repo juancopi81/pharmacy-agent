@@ -2,7 +2,7 @@
 
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class LanguageMode(str, Enum):
@@ -25,7 +25,17 @@ class ChatMessage(BaseModel):
     """A single message in the conversation history."""
 
     role: Role
-    content: str
+    content: str = Field(
+        ..., max_length=16000, description="Message content (max 16k characters)"
+    )
+
+    @field_validator("role")
+    @classmethod
+    def validate_role(cls, v: Role) -> Role:
+        """Only allow user and assistant roles for inbound messages (security)."""
+        if v == Role.SYSTEM:
+            raise ValueError("System role is not allowed in inbound messages")
+        return v
 
 
 class ChatRequest(BaseModel):
@@ -34,7 +44,8 @@ class ChatRequest(BaseModel):
     messages: list[ChatMessage] = Field(
         ...,
         min_length=1,
-        description="Conversation history (required, at least one message)",
+        max_length=100,
+        description="Conversation history (required, 1-100 messages)",
     )
     user_identifier: str | None = Field(
         default=None,

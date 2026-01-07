@@ -18,6 +18,13 @@ class Settings:
         self.debug: bool = os.getenv("DEBUG", "false").lower() == "true"
         self.db_path: str = os.getenv("DB_PATH", "data/pharmacy.db")
 
+        # Fail fast if OPENAI_API_KEY is missing
+        if not self.openai_api_key and not self.debug:
+            raise ValueError(
+                "OPENAI_API_KEY environment variable is required. "
+                "Set it in your environment or .env file."
+            )
+
 
 @lru_cache
 def get_settings() -> Settings:

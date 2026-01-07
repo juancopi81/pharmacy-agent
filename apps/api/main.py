@@ -55,7 +55,7 @@ async def root() -> HTMLResponse:
     """Serve the chat UI or a placeholder if UI is not yet available."""
     index_path = WEB_DIR / "index.html"
     if index_path.exists():
-        return HTMLResponse(content=index_path.read_text())
+        return HTMLResponse(content=index_path.read_text(encoding="utf-8"))
 
     placeholder_html = """
     <!DOCTYPE html>
@@ -119,10 +119,14 @@ async def generate_stream_placeholder() -> AsyncGenerator[str, None]:
 
     def format_event(event_type: StreamEventType, data: dict) -> str:
         payload = {"type": event_type.value, "data": data}
-        return f"data: {json.dumps(payload)}\n\n"
+        return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
 
-    yield format_event(StreamEventType.TOKEN, {"text": "Streaming endpoint placeholder. "})
-    yield format_event(StreamEventType.TOKEN, {"text": "LangGraph agent implementation coming soon."})
+    yield format_event(
+        StreamEventType.TOKEN, {"text": "Streaming endpoint placeholder. "}
+    )
+    yield format_event(
+        StreamEventType.TOKEN, {"text": "LangGraph agent implementation coming soon."}
+    )
     yield format_event(StreamEventType.DONE, {})
 
 
@@ -142,7 +146,7 @@ async def chat_stream(request: ChatRequest) -> StreamingResponse:
     logger.info(
         f"Chat request: {len(request.messages)} messages, "
         f"lang_mode={request.lang_mode.value}, "
-        f"has_user_id={request.user_identifier is not None}"
+        f"has_user_identifier={request.user_identifier is not None}"
     )
 
     return StreamingResponse(
