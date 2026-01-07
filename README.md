@@ -218,12 +218,12 @@ The seed script creates `data/pharmacy.db` with synthetic data for testing all f
 
 ### Business Rules
 
-| Rule | Logic |
-|------|-------|
-| **Refill eligibility** | `status = active` AND `refills_left > 0` |
+| Rule                      | Logic                                                                          |
+| ------------------------- | ------------------------------------------------------------------------------ |
+| **Refill eligibility**    | `status = active` AND `refills_left > 0`                                       |
 | **Prescription statuses** | `active` (can refill), `completed` (no refills left), `expired` (needs new Rx) |
-| **User lookup** | By email or phone number (case-insensitive for email) |
-| **Inventory** | Single store (store_id=1), includes restock ETA for out-of-stock items |
+| **User lookup**           | By email or phone number (case-insensitive for email)                          |
+| **Inventory**             | Single store (store_id=1), includes restock ETA for out-of-stock items         |
 
 ### Medications (5)
 
@@ -237,11 +237,11 @@ The seed script creates `data/pharmacy.db` with synthetic data for testing all f
 
 ### Users with Prescriptions
 
-| User            | Email                   | Prescriptions                                  | Test Scenario |
-| --------------- | ----------------------- | ---------------------------------------------- | ------------- |
+| User            | Email                   | Prescriptions                                  | Test Scenario                    |
+| --------------- | ----------------------- | ---------------------------------------------- | -------------------------------- |
 | David Cohen     | david.cohen@example.com | Amoxicillin (2 refills), Metformin (5 refills) | Happy path - eligible for refill |
-| Sarah Levi      | sarah.levi@example.com  | Amoxicillin (completed)                        | No refills remaining |
-| Yossi Goldstein | yossi.g@example.com     | Metformin (expired)                            | Expired prescription |
+| Sarah Levi      | sarah.levi@example.com  | Amoxicillin (completed)                        | No refills remaining             |
+| Yossi Goldstein | yossi.g@example.com     | Metformin (expired)                            | Expired prescription             |
 
 > **Note:** 10 users total are seeded; 7 have no prescriptions (for UNAUTHORIZED testing).
 
@@ -325,6 +325,30 @@ data: {"type": "tool_call", "name": "get_medication_by_name", "args": {...}}
 data: {"type": "tool_result", "name": "get_medication_by_name", "result": {...}}
 data: {"type": "done"}
 ```
+
+---
+
+## Future Enhancements
+
+This MVP demonstrates core functionality. Potential next steps for production deployment:
+
+### Evaluation & Quality
+
+- **LLM-as-a-Judge**: Implement automated evaluation using an AI model to score response quality, policy adherence, and flow completion
+- **Golden Dataset**: Build a curated dataset of reference conversations for regression testing and prompt optimization
+- **DSPy Integration**: Use DSPy for systematic prompt improvement and optimization based on evaluation metrics
+
+### Scalability & Performance
+
+- **Postgres + Connection Pooling**: Replace SQLite with Postgres for safe concurrent access, and use a pooled async connection layer (SQLAlchemy Async or asyncpg) to reuse DB connections and reduce latency under load.
+- **Caching Layer**: Add Redis for frequently accessed medication/inventory data
+- **Rate Limiting**: Implement per-user rate limits to prevent abuse
+
+### Observability
+
+- **Structured Traces**: Add LangSmith for distributed tracing across tool calls and LLM interactions
+- **Metrics Dashboard**: Track token usage, latency percentiles, error rates, and flow completion rates
+- **Cost Monitoring**: Log and analyze per-conversation token costs
 
 ---
 
