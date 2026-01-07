@@ -14,10 +14,11 @@
 - [x] Database helper (apps/api/database.py)
 
 ### M2 — Tools
-- [ ] Tool 1: `get_medication_by_name`
-- [ ] Tool 2: `check_inventory`
-- [ ] Tool 3: `prescription_management`
-- [ ] Document schemas/errors/fallbacks for each tool
+- [x] Tool 1: `get_medication_by_name` (apps/api/tools/medication.py)
+- [x] Tool 2: `check_inventory` (apps/api/tools/inventory.py)
+- [x] Tool 3: `prescription_management` (apps/api/tools/prescription.py)
+- [x] Document schemas/errors/fallbacks (apps/api/tools/schemas.py, exceptions.py)
+- [x] Unit tests (24 tests passing)
 
 ### M3 — Agent Orchestration + Streaming
 - [ ] LangGraph workflow setup
@@ -50,7 +51,7 @@
 - [ ] Stateless backend (client sends history each turn)
 - [ ] Real-time text streaming (GPT-5)
 - [ ] Hebrew and English support
-- [ ] At least 3 tools with clear API design
+- [x] At least 3 tools with clear API design
 - [x] Synthetic DB (10 users, 5 medications)
 - [ ] UI to interact with the agent
 - [ ] At least 3 distinct multi-step flows
