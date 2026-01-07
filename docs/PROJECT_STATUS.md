@@ -34,17 +34,17 @@
 - [x] Policy adherence tests (refuse advice/diagnosis) - tested and verified
 
 ### M5 — Packaging + Evidence
-- [ ] Dockerfile
-- [ ] README with run instructions
+- [x] Dockerfile
+- [x] README with run instructions
 - [x] 2-3 screenshots of conversations (docs/screenshots/) - includes Hebrew
 
 ## Deliverables Checklist
 
-- [ ] README.md with architecture + Docker run instructions
+- [x] README.md with architecture + Docker run instructions
 - [x] 3 multi-step flow demonstrations (docs/FLOWS.md)
 - [x] 2-3 screenshots of conversations (docs/screenshots/)
 - [x] Evaluation plan for agent flows (docs/EVAL_PLAN.md)
-- [ ] Dockerfile
+- [x] Dockerfile
 
 ## Technical Requirements
 
