@@ -8,9 +8,10 @@
 - [ ] Basic UI stub (apps/web/)
 
 ### M1 — Data Layer
-- [ ] SQLite schema design
-- [ ] Seed script (scripts/seed_db.py)
-- [ ] 10 users, 5 medications, sample prescriptions, inventory
+- [x] SQLite schema design (users, medications, prescriptions, inventory)
+- [x] Seed script (scripts/seed_db.py)
+- [x] 10 users, 5 medications, 8 prescriptions, inventory
+- [x] Database helper (apps/api/database.py)
 
 ### M2 — Tools
 - [ ] Tool 1: `get_medication_by_name`
@@ -50,7 +51,7 @@
 - [ ] Real-time text streaming (GPT-5)
 - [ ] Hebrew and English support
 - [ ] At least 3 tools with clear API design
-- [ ] Synthetic DB (10 users, 5 medications)
+- [x] Synthetic DB (10 users, 5 medications)
 - [ ] UI to interact with the agent
 - [ ] At least 3 distinct multi-step flows
 - [ ] Policy enforcement (facts-only, no medical advice)
