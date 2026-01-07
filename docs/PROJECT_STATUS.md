@@ -21,10 +21,10 @@
 - [x] Unit tests (24 tests passing)
 
 ### M3 — Agent Orchestration + Streaming
-- [ ] LangGraph workflow setup
-- [x] POST /chat/stream endpoint (placeholder, SSE format ready)
-- [ ] SSE streaming responses (actual agent integration)
-- [ ] Bilingual support (Hebrew + English)
+- [x] LangGraph workflow setup (apps/api/agent/)
+- [x] POST /chat/stream endpoint with agent integration
+- [x] SSE streaming responses (token, tool_call, tool_result, error, done events)
+- [x] Bilingual support via system prompt (Hebrew + English)
 
 ### M4 — Flows + Evaluation
 - [ ] Flow A: Medication Info (Customer Service)
@@ -48,11 +48,11 @@
 
 ## Technical Requirements
 
-- [ ] Stateless backend (client sends history each turn)
-- [ ] Real-time text streaming (GPT-5)
-- [ ] Hebrew and English support
+- [x] Stateless backend (client sends history each turn)
+- [x] Real-time text streaming (GPT-5)
+- [x] Hebrew and English support
 - [x] At least 3 tools with clear API design
 - [x] Synthetic DB (10 users, 5 medications)
 - [ ] UI to interact with the agent
 - [ ] At least 3 distinct multi-step flows
-- [ ] Policy enforcement (facts-only, no medical advice)
+- [x] Policy enforcement (facts-only, no medical advice)

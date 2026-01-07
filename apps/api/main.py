@@ -5,18 +5,17 @@ A stateless AI pharmacy agent providing medication information,
 inventory checks, and prescription management via streaming chat.
 """
 
-import json
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import AsyncGenerator
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
+from apps.api.agent import create_pharmacy_agent, stream_agent_response
 from apps.api.config import get_settings
 from apps.api.logging_config import get_logger, setup_logging
-from apps.api.schemas import ChatRequest, HealthResponse, StreamEventType
+from apps.api.schemas import ChatRequest, HealthResponse
 
 setup_logging()
 logger = get_logger(__name__)
@@ -110,26 +109,6 @@ async def health_check() -> HealthResponse:
     )
 
 
-async def generate_stream_placeholder() -> AsyncGenerator[str, None]:
-    """
-    Placeholder generator for SSE streaming.
-
-    This will be replaced with actual LangGraph agent streaming.
-    """
-
-    def format_event(event_type: StreamEventType, data: dict) -> str:
-        payload = {"type": event_type.value, "data": data}
-        return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
-
-    yield format_event(
-        StreamEventType.TOKEN, {"text": "Streaming endpoint placeholder. "}
-    )
-    yield format_event(
-        StreamEventType.TOKEN, {"text": "LangGraph agent implementation coming soon."}
-    )
-    yield format_event(StreamEventType.DONE, {})
-
-
 @app.post("/chat/stream")
 async def chat_stream(request: ChatRequest) -> StreamingResponse:
     """
@@ -149,8 +128,16 @@ async def chat_stream(request: ChatRequest) -> StreamingResponse:
         f"has_user_identifier={request.user_identifier is not None}"
     )
 
+    # Convert ChatMessage to dict format for agent
+    messages = [
+        {"role": msg.role.value, "content": msg.content} for msg in request.messages
+    ]
+
+    # Create agent with optional user context for prescriptions
+    agent = create_pharmacy_agent(user_identifier=request.user_identifier)
+
     return StreamingResponse(
-        generate_stream_placeholder(),
+        stream_agent_response(agent=agent, messages=messages),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

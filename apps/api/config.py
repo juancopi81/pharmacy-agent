@@ -13,6 +13,7 @@ class Settings:
 
     def __init__(self) -> None:
         self.openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
+        self.openai_model: str = os.getenv("OPENAI_MODEL", "gpt-5-2025-08-07")
         self.app_name: str = "Pharmacy Agent"
         self.app_version: str = "0.1.0"
         self.debug: bool = os.getenv("DEBUG", "false").lower() == "true"
