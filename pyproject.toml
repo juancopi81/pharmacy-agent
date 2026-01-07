@@ -1,0 +1,20 @@
+[project]
+name = "pharmacy-agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "aiosqlite>=0.22.1",
+    "fastapi>=0.128.0",
+    "langgraph>=1.0.5",
+    "openai>=2.14.0",
+    "pydantic>=2.12.5",
+    "python-dotenv>=1.2.1",
+    "uvicorn[standard]>=0.40.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
