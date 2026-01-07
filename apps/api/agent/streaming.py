@@ -5,7 +5,11 @@ from typing import Any, AsyncGenerator
 
 from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
 
+from apps.api.logging_config import get_logger
 from apps.api.schemas import StreamEventType
+from apps.api.tracing import TraceContext
+
+logger = get_logger(__name__)
 
 
 def format_sse_event(event_type: StreamEventType, data: dict) -> str:
@@ -36,6 +40,7 @@ def convert_messages(messages: list[dict]) -> list[HumanMessage | AIMessage]:
 async def stream_agent_response(
     agent: Any,
     messages: list[dict],
+    trace_ctx: TraceContext | None = None,
 ) -> AsyncGenerator[str, None]:
     """
     Stream agent response as SSE events.
@@ -50,6 +55,7 @@ async def stream_agent_response(
     Args:
         agent: Compiled LangGraph agent
         messages: Conversation history as list of dicts
+        trace_ctx: Optional trace context for request correlation and timing
 
     Yields:
         SSE formatted event strings
@@ -57,17 +63,22 @@ async def stream_agent_response(
     # Convert messages to LangChain format
     lc_messages = convert_messages(messages)
 
+    # Map LangGraph run_id -> TraceContext call_id (handles overlapping/nested calls)
+    active_calls: dict[str, int] = {}
+
     try:
         # Stream using astream_events for fine-grained control
         async for event in agent.astream_events(
             {"messages": lc_messages},
             version="v2",
         ):
-            kind = event["event"]
+            kind = event.get("event")
+            run_id = event.get("run_id")
+            run_key = str(run_id) if run_id is not None else None
 
             # Handle streaming tokens from LLM
             if kind == "on_chat_model_stream":
-                chunk = event["data"].get("chunk")
+                chunk = event.get("data", {}).get("chunk")
                 if isinstance(chunk, AIMessageChunk) and chunk.content:
                     # Handle content that may be string or list
                     text = (
@@ -80,21 +91,49 @@ async def stream_agent_response(
 
             # Handle tool start - more reliable than parsing tool_call_chunks
             elif kind == "on_tool_start":
+                tool_name = event.get("name", "unknown")
+
+                # Record tool start in trace context
+                if trace_ctx and run_key:
+                    active_calls[run_key] = trace_ctx.start_tool(tool_name)
+
                 yield format_sse_event(
                     StreamEventType.TOOL_CALL,
                     {
-                        "tool": event.get("name", "unknown"),
-                        "input": event["data"].get("input"),
+                        "tool": tool_name,
+                        "input": event.get("data", {}).get("input"),
                     },
                 )
 
             # Handle tool execution results
             elif kind == "on_tool_end":
-                tool_output = event["data"].get("output")
+                tool_name = event.get("name", "unknown")
+                tool_output = event.get("data", {}).get("output")
+
+                # Determine status and error info from output
+                status = "success"
+                error_code = None
+                error_message = None
+                if isinstance(tool_output, dict) and tool_output.get("success") is False:
+                    status = "error"
+                    error_code = tool_output.get("error_code")
+                    error_message = tool_output.get("error_message")
+
+                # Record tool end in trace context
+                if trace_ctx and run_key and run_key in active_calls:
+                    call_id = active_calls.pop(run_key)
+                    trace_ctx.end_tool(call_id, status=status, error_code=error_code)
+                    if status == "error":
+                        trace_ctx.add_error(
+                            error_code=error_code or "UNKNOWN",
+                            message=error_message or "Unknown error",
+                            tool_name=tool_name,
+                        )
+
                 yield format_sse_event(
                     StreamEventType.TOOL_RESULT,
                     {
-                        "tool": event.get("name", "unknown"),
+                        "tool": tool_name,
                         "result": (
                             tool_output
                             if isinstance(tool_output, dict)
@@ -103,9 +142,36 @@ async def stream_agent_response(
                     },
                 )
 
+            # Handle tool errors (defensive - may not fire but handle if it does)
+            elif kind == "on_tool_error":
+                tool_name = event.get("name", "unknown")
+                error_info = event.get("data", {}).get("error", "Unknown error")
+
+                if trace_ctx and run_key and run_key in active_calls:
+                    call_id = active_calls.pop(run_key)
+                    trace_ctx.end_tool(call_id, status="error", error_code="TOOL_EXCEPTION")
+                    trace_ctx.add_error(
+                        error_code="TOOL_EXCEPTION",
+                        message=str(error_info),
+                        tool_name=tool_name,
+                    )
+
         # Send done event
         yield format_sse_event(StreamEventType.DONE, {})
 
     except Exception as e:
+        # Record stream-level error
+        if trace_ctx:
+            trace_ctx.add_error(
+                error_code="STREAM_ERROR",
+                message=str(e),
+                tool_name=None,
+            )
         yield format_sse_event(StreamEventType.ERROR, {"message": str(e)})
         yield format_sse_event(StreamEventType.DONE, {})
+
+    finally:
+        # Log trace summary at request completion
+        if trace_ctx:
+            summary = {"event": "request_complete", **trace_ctx.to_summary_dict()}
+            logger.info(json.dumps(summary, ensure_ascii=False))

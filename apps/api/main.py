@@ -16,6 +16,7 @@ from apps.api.agent import create_pharmacy_agent, stream_agent_response
 from apps.api.config import get_settings
 from apps.api.logging_config import get_logger, setup_logging
 from apps.api.schemas import ChatRequest, HealthResponse
+from apps.api.tracing import TraceContext
 
 setup_logging()
 logger = get_logger(__name__)
@@ -122,9 +123,13 @@ async def chat_stream(request: ChatRequest) -> StreamingResponse:
     - error: Any errors that occur
     - done: Marks end of stream
     """
+    # Initialize trace context for request correlation
+    trace_ctx = TraceContext(user_id=request.user_identifier)
+
     logger.info(
         f"Chat request: {len(request.messages)} messages, "
-        f"has_user_identifier={request.user_identifier is not None}"
+        f"has_user_identifier={request.user_identifier is not None}, "
+        f"request_id={trace_ctx.request_id}"
     )
 
     # Convert ChatMessage to dict format for agent
@@ -136,11 +141,12 @@ async def chat_stream(request: ChatRequest) -> StreamingResponse:
     agent = create_pharmacy_agent(user_identifier=request.user_identifier)
 
     return StreamingResponse(
-        stream_agent_response(agent=agent, messages=messages),
+        stream_agent_response(agent=agent, messages=messages, trace_ctx=trace_ctx),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
             "X-Accel-Buffering": "no",
+            "X-Request-ID": trace_ctx.request_id,
         },
     )
