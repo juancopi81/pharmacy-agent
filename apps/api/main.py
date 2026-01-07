@@ -124,7 +124,6 @@ async def chat_stream(request: ChatRequest) -> StreamingResponse:
     """
     logger.info(
         f"Chat request: {len(request.messages)} messages, "
-        f"lang_mode={request.lang_mode.value}, "
         f"has_user_identifier={request.user_identifier is not None}"
     )
 

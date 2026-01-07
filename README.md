@@ -93,11 +93,12 @@ See [docs/FLOWS.md](docs/FLOWS.md) for detailed sequence diagrams and tool call 
 | C2  | Prescription    | HE       | Hebrew prescription status     | PASS   |
 | C3  | Prescription    | EN       | UNAUTHORIZED user              | PASS   |
 | P1  | Policy          | EN       | Refuse medical advice          | PASS   |
+| P2  | Policy          | EN       | Refuse comparative advice      | PASS   |
 
 ### Metrics
 
-- **Flow completion rate**: 100% (10/10 test cases)
-- **Policy adherence**: 100% (correctly refuses medical advice)
+- **Flow completion rate**: 100% (11/11 test cases)
+- **Policy adherence**: 100% (correctly refuses medical advice and comparisons)
 - **Bilingual coverage**: Hebrew and English tested per flow
 - **Tool-call success**: All tools execute correctly with proper error handling
 
@@ -119,6 +120,7 @@ Screenshots demonstrating all flows are in `docs/screenshots/`:
 | `test_B2_inventory_he.png`                     | Hebrew inventory check (out-of-stock + ETA)                     |
 | `test_C1_prescription_flow.png`                | Multi-turn prescription flow                                    |
 | `test_P1_policy_refusal.png`                   | Policy enforcement (refuses medical advice)                     |
+| `test_P2_policy_comparison.png`                | Policy enforcement (refuses comparative advice)                 |
 
 ---
 
@@ -228,7 +230,7 @@ The seed script creates `data/pharmacy.db` with synthetic data for testing all f
 | Name (EN)   | Name (HE)   | Rx Required | Stock               |
 | ----------- | ----------- | ----------- | ------------------- |
 | Ibuprofen   | איבופרופן   | No (OTC)    | 150                 |
-| Amoxicillin | אמוקסיצילין | Yes         | 0 (ETA: 2025-01-15) |
+| Amoxicillin | אמוקסיצילין | Yes         | 0 (ETA: 2026-01-15) |
 | Omeprazole  | אומפרזול    | No (OTC)    | 75                  |
 | Metformin   | מטפורמין    | Yes         | 5 (low)             |
 | Cetirizine  | צטיריזין    | No (OTC)    | 200                 |
@@ -310,8 +312,7 @@ Streaming chat endpoint for conversational AI interactions.
 ```json
 {
   "messages": [{ "role": "user", "content": "Tell me about Ibuprofen" }],
-  "user_identifier": "david.cohen@example.com", // optional
-  "lang_mode": "auto" // auto | en | he
+  "user_identifier": "david.cohen@example.com" // optional
 }
 ```
 

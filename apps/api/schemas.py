@@ -5,14 +5,6 @@ from enum import Enum
 from pydantic import BaseModel, Field, field_validator
 
 
-class LanguageMode(str, Enum):
-    """Supported language modes."""
-
-    AUTO = "auto"
-    EN = "en"
-    HE = "he"
-
-
 class Role(str, Enum):
     """Message roles."""
 
@@ -50,10 +42,6 @@ class ChatRequest(BaseModel):
     user_identifier: str | None = Field(
         default=None,
         description="Optional user identifier (email or phone) for prescription lookups",
-    )
-    lang_mode: LanguageMode = Field(
-        default=LanguageMode.AUTO,
-        description="Language mode: auto (detect from message), en, or he",
     )
 
 

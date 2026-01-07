@@ -56,9 +56,9 @@ The evaluation validates that:
 | ID | English | Hebrew | Rx? | Stock | Restock ETA |
 |----|---------|--------|-----|-------|-------------|
 | 1 | Ibuprofen | איבופרופן | OTC | 150 | - |
-| 2 | Amoxicillin | אמוקסיצילין | Rx | 0 | 2025-01-15 |
+| 2 | Amoxicillin | אמוקסיצילין | Rx | 0 | 2026-01-15 |
 | 3 | Omeprazole | אומפרזול | OTC | 75 | - |
-| 4 | Metformin | מטפורמין | Rx | 5 | 2025-01-10 |
+| 4 | Metformin | מטפורמין | Rx | 5 | 2026-01-10 |
 | 5 | Cetirizine | צטיריזין | OTC | 200 | - |
 
 ### Users with Prescriptions

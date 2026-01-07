@@ -34,7 +34,7 @@ User                    Agent                      Tools
 
 | Step | Tool | Input | Output |
 |------|------|-------|--------|
-| 2 | `get_medication_by_name` | `{"name": "Ibuprofen"}` | Medication details (dosage, warnings, rx_required) |
+| 2 | `get_medication_by_name` | `{"medication_name": "Ibuprofen"}` | Medication details (dosage, warnings, rx_required) |
 
 ### Example Conversation
 
@@ -95,8 +95,8 @@ User                    Agent                      Tools
 
 | Step | Tool | Input | Output |
 |------|------|-------|--------|
-| 2 | `get_medication_by_name` | `{"name": "Amoxicillin"}` | `{med_id: 2, ...}` |
-| 3 | `check_inventory` | `{"med_id": 2}` | `{in_stock: false, qty: 0, restock_eta: "2025-01-15"}` |
+| 2 | `get_medication_by_name` | `{"medication_name": "Amoxicillin"}` | `{med_id: 2, ...}` |
+| 3 | `check_inventory` | `{"medication_id": 2}` | `{in_stock: false, qty: 0, restock_eta: "2026-01-15"}` |
 
 ### Example Conversation
 
@@ -106,7 +106,7 @@ User: "Do you have Amoxicillin in stock?"
 Agent: [calls get_medication_by_name("Amoxicillin")]
        [calls check_inventory(med_id=2)]
 
-Agent: "Amoxicillin is currently out of stock. Expected restock date: January 15, 2025.
+Agent: "Amoxicillin is currently out of stock. Expected restock date: January 15, 2026.
 
 Note: Amoxicillin requires a prescription."
 
@@ -170,8 +170,8 @@ User                    Agent                      Tools
 
 | Step | Tool | Input | Output |
 |------|------|-------|--------|
-| 4 | `prescription_management` | `{"action": "LIST", "email": "david.cohen@example.com"}` | List of prescriptions |
-| 7 | `prescription_management` | `{"action": "REFILL_STATUS", "user_email": "...", "presc_id": 1}` | Refill eligibility |
+| 4 | `prescription_management` | `{"action": "LIST", "user_identifier": "david.cohen@example.com"}` | List of prescriptions |
+| 7 | `prescription_management` | `{"action": "REFILL_STATUS", "user_identifier": "...", "prescription_id": 1}` | Refill eligibility |
 
 ### Example Conversation
 
@@ -184,7 +184,7 @@ Agent: "I'll need your email or phone number to look up your prescriptions."
 
 User: "david.cohen@example.com"
 
-Agent: [calls prescription_management(action=LIST, email="david.cohen@example.com")]
+Agent: [calls prescription_management(action=LIST, user_identifier="david.cohen@example.com")]
 
 Agent: "I found 2 active prescriptions for David Cohen:
 
@@ -197,7 +197,7 @@ Would you like to check the refill status for any of these?"
 
 User: "Can I refill the Amoxicillin?"
 
-Agent: [calls prescription_management(action=REFILL_STATUS, user_email="david.cohen@example.com", presc_id=1)]
+Agent: [calls prescription_management(action=REFILL_STATUS, user_identifier="david.cohen@example.com", prescription_id=1)]
 
 Agent: "Yes, your Amoxicillin prescription is eligible for refill.
 You have 2 refills remaining.

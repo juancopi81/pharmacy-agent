@@ -183,9 +183,9 @@ def seed_inventory(conn: sqlite3.Connection) -> None:
     inventory = [
         # (store_id, med_id, qty, restock_eta)
         (1, 1, 150, None),  # Ibuprofen - in stock
-        (1, 2, 0, "2025-01-15"),  # Amoxicillin - out of stock, ETA
+        (1, 2, 0, "2026-01-15"),  # Amoxicillin - out of stock, ETA
         (1, 3, 75, None),  # Omeprazole - in stock
-        (1, 4, 5, "2025-01-10"),  # Metformin - low stock, ETA
+        (1, 4, 5, "2026-01-10"),  # Metformin - low stock, ETA
         (1, 5, 200, None),  # Cetirizine - in stock
     ]
     conn.executemany(
