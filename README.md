@@ -2,24 +2,21 @@
 
 Real-time AI pharmacy agent powered by GPT-5 and LangGraph. Provides medication information, inventory checks, and prescription management through a streaming chat interface supporting Hebrew and English.
 
-## Quick Start
+## Quick Start (Docker)
 
 ```bash
-# 1. Install dependencies
-uv sync
-
-# 2. Set up environment
+# 1. Set up environment
 cp .env.example .env
 # Edit .env and add your OPENAI_API_KEY
 
-# 3. Seed the database
-uv run python scripts/seed_db.py
+# 2. Build and run
+docker build -t pharmacy-agent .
+docker run --env-file .env -p 8000:8000 pharmacy-agent
 
-# 4. Run the server
-uv run uvicorn apps.api.main:app --reload --port 8000
-
-# 5. Open http://localhost:8000
+# 3. Open http://localhost:8000
 ```
+
+> For local development without Docker, see [Local Development](#local-development) below.
 
 ---
 
@@ -239,6 +236,29 @@ sqlite3 data/pharmacy.db "SELECT name_en, name_he FROM medications;"
 
 ---
 
+## Local Development
+
+For development without Docker:
+
+```bash
+# 1. Install dependencies (requires uv: https://docs.astral.sh/uv/)
+uv sync
+
+# 2. Set up environment
+cp .env.example .env
+# Edit .env and add your OPENAI_API_KEY
+
+# 3. Seed the database
+uv run python scripts/seed_db.py
+
+# 4. Run the server (with hot reload)
+uv run uvicorn apps.api.main:app --reload --port 8000
+
+# 5. Open http://localhost:8000
+```
+
+---
+
 ## Run Tests
 
 ```bash
@@ -247,20 +267,6 @@ uv run pytest
 
 # Run specific test file
 uv run pytest tests/test_tools/test_medication.py -v
-```
-
----
-
-## Run with Docker
-
-```bash
-# Build image
-docker build -t pharmacy-agent .
-
-# Run container
-docker run --env-file .env -p 8000:8000 pharmacy-agent
-
-# Open http://localhost:8000
 ```
 
 ---
