@@ -3,7 +3,7 @@
 ## Milestones
 
 ### M0 — Repo + Scaffolding
-- [x] Python/FastAPI skeleton
+- [x] Python/FastAPI skeleton (apps/api/main.py + config + schemas + logging)
 - [x] uv config (pyproject.toml)
 - [ ] Basic UI stub (apps/web/)
 
@@ -20,8 +20,8 @@
 
 ### M3 — Agent Orchestration + Streaming
 - [ ] LangGraph workflow setup
-- [ ] POST /chat/stream endpoint
-- [ ] SSE streaming responses
+- [x] POST /chat/stream endpoint (placeholder, SSE format ready)
+- [ ] SSE streaming responses (actual agent integration)
 - [ ] Bilingual support (Hebrew + English)
 
 ### M4 — Flows + Evaluation
