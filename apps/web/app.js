@@ -421,6 +421,7 @@ function handleHintClick(event) {
             elements.messageInput.value = hint;
             autoResizeTextarea(elements.messageInput);
             elements.messageInput.focus();
+            updateUI();
         }
     }
 }
