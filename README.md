@@ -22,14 +22,14 @@ docker run --env-file .env -p 8000:8000 pharmacy-agent
 
 ## Key Features
 
-| Feature | Description |
-|---------|-------------|
-| Real-time streaming | SSE-based streaming responses with token-by-token output |
-| Bilingual | Responds in Hebrew or English based on user's language |
-| 3 Tools | Medication lookup, inventory check, prescription management |
-| 3 Multi-step flows | Complete customer journeys from request to resolution |
-| Policy enforcement | Facts-only responses, refuses medical advice |
-| Stateless | Client sends conversation history each turn |
+| Feature             | Description                                                 |
+| ------------------- | ----------------------------------------------------------- |
+| Real-time streaming | SSE-based streaming responses with token-by-token output    |
+| Bilingual           | Responds in Hebrew or English based on user's language      |
+| 3 Tools             | Medication lookup, inventory check, prescription management |
+| 3 Multi-step flows  | Complete customer journeys from request to resolution       |
+| Policy enforcement  | Facts-only responses, refuses medical advice                |
+| Stateless           | Client sends conversation history each turn                 |
 
 ---
 
@@ -38,6 +38,7 @@ docker run --env-file .env -p 8000:8000 pharmacy-agent
 The agent executes three distinct multi-step flows, each representing a complete customer journey:
 
 ### Flow A: Medication Info (Customer Service)
+
 ```
 User: "Tell me about Ibuprofen"
   → Agent calls get_medication_by_name()
@@ -49,6 +50,7 @@ User: "Should I take it for my headache?"
 ```
 
 ### Flow B: Inventory Check (Inventory Control)
+
 ```
 User: "Do you have Amoxicillin in stock?"
   → Agent calls get_medication_by_name()
@@ -57,6 +59,7 @@ User: "Do you have Amoxicillin in stock?"
 ```
 
 ### Flow C: Prescription Management (Multi-turn)
+
 ```
 User: "What prescriptions do I have?"
   → Agent asks for email/phone identifier
@@ -78,18 +81,18 @@ See [docs/FLOWS.md](docs/FLOWS.md) for detailed sequence diagrams and tool call 
 
 ### Test Cases
 
-| ID | Flow | Language | Scenario | Status |
-|----|------|----------|----------|--------|
-| A1 | Medication Info | EN | Happy path - medication found | PASS |
-| A2 | Medication Info | HE | Hebrew query and response | PASS |
-| A3 | Medication Info | EN | NOT_FOUND error handling | PASS |
-| B1 | Inventory | EN | In-stock medication | PASS |
-| B2 | Inventory | HE | Out-of-stock with ETA | PASS |
-| B3 | Inventory | EN | NOT_FOUND error handling | PASS |
-| C1 | Prescription | EN | Multi-turn: list prescriptions | PASS |
-| C2 | Prescription | HE | Hebrew prescription status | PASS |
-| C3 | Prescription | EN | UNAUTHORIZED user | PASS |
-| P1 | Policy | EN | Refuse medical advice | PASS |
+| ID  | Flow            | Language | Scenario                       | Status |
+| --- | --------------- | -------- | ------------------------------ | ------ |
+| A1  | Medication Info | EN       | Happy path - medication found  | PASS   |
+| A2  | Medication Info | HE       | Hebrew query and response      | PASS   |
+| A3  | Medication Info | EN       | NOT_FOUND error handling       | PASS   |
+| B1  | Inventory       | EN       | In-stock medication            | PASS   |
+| B2  | Inventory       | HE       | Out-of-stock with ETA          | PASS   |
+| B3  | Inventory       | EN       | NOT_FOUND error handling       | PASS   |
+| C1  | Prescription    | EN       | Multi-turn: list prescriptions | PASS   |
+| C2  | Prescription    | HE       | Hebrew prescription status     | PASS   |
+| C3  | Prescription    | EN       | UNAUTHORIZED user              | PASS   |
+| P1  | Policy          | EN       | Refuse medical advice          | PASS   |
 
 ### Metrics
 
@@ -106,13 +109,16 @@ See [docs/EVAL_PLAN.md](docs/EVAL_PLAN.md) for full evaluation methodology.
 
 Screenshots demonstrating all flows are in `docs/screenshots/`:
 
-| Screenshot | Description |
-|------------|-------------|
-| `test_A1_medication_info_en.png` | English medication lookup (Ibuprofen) |
-| `test_A2_medication_info_he.png` | Hebrew medication lookup (Cetirizine) |
-| `test_B2_inventory_he.png` | Hebrew inventory check (out-of-stock + ETA) |
-| `test_C1_prescription_flow.png` | Multi-turn prescription flow |
-| `test_P1_policy_refusal.png` | Policy enforcement (refuses medical advice) |
+| Screenshot                                     | Description                                                     |
+| ---------------------------------------------- | --------------------------------------------------------------- |
+| `test_A1_medication_info_en_no_activity.png`   | English medication lookup (Ibuprofen)                           |
+| `test_A1_medication_info_en_show_activity.png` | English medication lookup (Ibuprofen) - Shows internal activity |
+| `test_A2_medication_info_he.png`               | Hebrew medication lookup (Cetirizine)                           |
+| `test_A3_medication_not_found_en.png`          | English medication lookup (XYZMed) - Not found                  |
+| `test_B1_inventory_en.png`                     | English inventory check (in-stock + Quantity)                   |
+| `test_B2_inventory_he.png`                     | Hebrew inventory check (out-of-stock + ETA)                     |
+| `test_C1_prescription_flow.png`                | Multi-turn prescription flow                                    |
+| `test_P1_policy_refusal.png`                   | Policy enforcement (refuses medical advice)                     |
 
 ---
 
@@ -210,21 +216,21 @@ The seed script creates `data/pharmacy.db` with sample data:
 
 ### Medications (5)
 
-| Name (EN) | Name (HE) | Rx Required | Stock |
-|-----------|-----------|-------------|-------|
-| Ibuprofen | איבופרופן | No (OTC) | 150 |
-| Amoxicillin | אמוקסיצילין | Yes | 0 (ETA: 2025-01-15) |
-| Omeprazole | אומפרזול | No (OTC) | 75 |
-| Metformin | מטפורמין | Yes | 5 (low) |
-| Cetirizine | צטיריזין | No (OTC) | 200 |
+| Name (EN)   | Name (HE)   | Rx Required | Stock               |
+| ----------- | ----------- | ----------- | ------------------- |
+| Ibuprofen   | איבופרופן   | No (OTC)    | 150                 |
+| Amoxicillin | אמוקסיצילין | Yes         | 0 (ETA: 2025-01-15) |
+| Omeprazole  | אומפרזול    | No (OTC)    | 75                  |
+| Metformin   | מטפורמין    | Yes         | 5 (low)             |
+| Cetirizine  | צטיריזין    | No (OTC)    | 200                 |
 
 ### Users with Prescriptions
 
-| User | Email | Prescriptions |
-|------|-------|---------------|
-| David Cohen | david.cohen@example.com | Amoxicillin (2 refills), Metformin (5 refills) |
-| Sarah Levi | sarah.levi@example.com | Amoxicillin (completed) |
-| Yossi Goldstein | yossi.g@example.com | Metformin (expired) |
+| User            | Email                   | Prescriptions                                  |
+| --------------- | ----------------------- | ---------------------------------------------- |
+| David Cohen     | david.cohen@example.com | Amoxicillin (2 refills), Metformin (5 refills) |
+| Sarah Levi      | sarah.levi@example.com  | Amoxicillin (completed)                        |
+| Yossi Goldstein | yossi.g@example.com     | Metformin (expired)                            |
 
 ```bash
 # Re-seed database
@@ -278,17 +284,17 @@ uv run pytest tests/test_tools/test_medication.py -v
 Streaming chat endpoint for conversational AI interactions.
 
 **Request:**
+
 ```json
 {
-  "messages": [
-    {"role": "user", "content": "Tell me about Ibuprofen"}
-  ],
-  "user_identifier": "david.cohen@example.com",  // optional
-  "lang_mode": "auto"  // auto | en | he
+  "messages": [{ "role": "user", "content": "Tell me about Ibuprofen" }],
+  "user_identifier": "david.cohen@example.com", // optional
+  "lang_mode": "auto" // auto | en | he
 }
 ```
 
 **Response:** Server-Sent Events stream
+
 ```
 data: {"type": "token", "content": "Here's"}
 data: {"type": "token", "content": " what"}
@@ -301,9 +307,9 @@ data: {"type": "done"}
 
 ## Documentation
 
-| Document | Description |
-|----------|-------------|
-| [docs/PROJECT_SPEC.md](docs/PROJECT_SPEC.md) | Full PRD + technical design |
-| [docs/FLOWS.md](docs/FLOWS.md) | Multi-step flow definitions with examples |
-| [docs/EVAL_PLAN.md](docs/EVAL_PLAN.md) | Evaluation methodology + test cases |
-| [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Implementation progress tracking |
+| Document                                         | Description                               |
+| ------------------------------------------------ | ----------------------------------------- |
+| [docs/PROJECT_SPEC.md](docs/PROJECT_SPEC.md)     | Full PRD + technical design               |
+| [docs/FLOWS.md](docs/FLOWS.md)                   | Multi-step flow definitions with examples |
+| [docs/EVAL_PLAN.md](docs/EVAL_PLAN.md)           | Evaluation methodology + test cases       |
+| [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Implementation progress tracking          |
