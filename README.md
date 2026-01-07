@@ -212,7 +212,16 @@ pharmacy-agent/
 
 ## Database
 
-The seed script creates `data/pharmacy.db` with sample data:
+The seed script creates `data/pharmacy.db` with synthetic data for testing all flows.
+
+### Business Rules
+
+| Rule | Logic |
+|------|-------|
+| **Refill eligibility** | `status = active` AND `refills_left > 0` |
+| **Prescription statuses** | `active` (can refill), `completed` (no refills left), `expired` (needs new Rx) |
+| **User lookup** | By email or phone number (case-insensitive for email) |
+| **Inventory** | Single store (store_id=1), includes restock ETA for out-of-stock items |
 
 ### Medications (5)
 
@@ -226,11 +235,24 @@ The seed script creates `data/pharmacy.db` with sample data:
 
 ### Users with Prescriptions
 
-| User            | Email                   | Prescriptions                                  |
-| --------------- | ----------------------- | ---------------------------------------------- |
-| David Cohen     | david.cohen@example.com | Amoxicillin (2 refills), Metformin (5 refills) |
-| Sarah Levi      | sarah.levi@example.com  | Amoxicillin (completed)                        |
-| Yossi Goldstein | yossi.g@example.com     | Metformin (expired)                            |
+| User            | Email                   | Prescriptions                                  | Test Scenario |
+| --------------- | ----------------------- | ---------------------------------------------- | ------------- |
+| David Cohen     | david.cohen@example.com | Amoxicillin (2 refills), Metformin (5 refills) | Happy path - eligible for refill |
+| Sarah Levi      | sarah.levi@example.com  | Amoxicillin (completed)                        | No refills remaining |
+| Yossi Goldstein | yossi.g@example.com     | Metformin (expired)                            | Expired prescription |
+
+> **Note:** 10 users total are seeded; 7 have no prescriptions (for UNAUTHORIZED testing).
+
+### Schema
+
+```
+users(user_id, name, phone, email)
+medications(med_id, name_en, name_he, active_ingredients, dosage_en, dosage_he, rx_required, warnings_en, warnings_he)
+prescriptions(presc_id, user_id, med_id, refills_left, status)
+inventory(store_id, med_id, qty, restock_eta)
+```
+
+For detailed tool behavior and edge cases, see [docs/FLOWS.md](docs/FLOWS.md). For implementation, see [`apps/api/tools/`](apps/api/tools/).
 
 ```bash
 # Re-seed database
