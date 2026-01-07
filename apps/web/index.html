@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy Agent</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                            <path d="M12 4v16M4 12h16"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-title">PharmAssist</span>
+                        <span class="logo-subtitle">AI Pharmacy Agent</span>
+                    </div>
+                </div>
+                <div class="header-controls">
+                    <label class="toggle-control">
+                        <input type="checkbox" id="showToolEvents">
+                        <span class="toggle-label">Show activity</span>
+                    </label>
+                </div>
+            </div>
+        </header>
+
+        <!-- Chat Area -->
+        <main class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <!-- Welcome message -->
+                <div class="welcome-card">
+                    <div class="welcome-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 4v16M4 12h16"/>
+                        </svg>
+                    </div>
+                    <h2>Welcome to PharmAssist</h2>
+                    <p>I can help you with medication information, check inventory availability, and manage your prescriptions.</p>
+                    <div class="welcome-hints">
+                        <button class="hint-pill" data-hint="Tell me about Ibuprofen">Medication info</button>
+                        <button class="hint-pill" data-hint="Is Aspirin in stock?">Check stock</button>
+                        <button class="hint-pill" data-hint="What prescriptions do I have?">My prescriptions</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Input Area -->
+        <footer class="input-container">
+            <div class="input-wrapper">
+                <div class="user-identifier-row" id="userIdentifierRow">
+                    <input
+                        type="text"
+                        id="userIdentifier"
+                        class="identifier-input"
+                        placeholder="Email or phone (for prescriptions)"
+                    >
+                </div>
+                <div class="message-input-row">
+                    <textarea
+                        id="messageInput"
+                        class="message-input"
+                        placeholder="Ask about medications, availability, or prescriptions..."
+                        rows="1"
+                    ></textarea>
+                    <button id="sendButton" class="send-button" aria-label="Send message">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <p class="disclaimer">For informational purposes only. Always consult a healthcare professional for medical advice.</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

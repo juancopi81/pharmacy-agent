@@ -5,7 +5,7 @@
 ### M0 — Repo + Scaffolding
 - [x] Python/FastAPI skeleton (apps/api/main.py + config + schemas + logging)
 - [x] uv config (pyproject.toml)
-- [ ] Basic UI stub (apps/web/)
+- [x] Chat UI (apps/web/index.html, app.js, style.css)
 
 ### M1 — Data Layer
 - [x] SQLite schema design (users, medications, prescriptions, inventory)
@@ -53,6 +53,6 @@
 - [x] Hebrew and English support
 - [x] At least 3 tools with clear API design
 - [x] Synthetic DB (10 users, 5 medications)
-- [ ] UI to interact with the agent
+- [x] UI to interact with the agent
 - [ ] At least 3 distinct multi-step flows
 - [x] Policy enforcement (facts-only, no medical advice)
