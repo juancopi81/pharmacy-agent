@@ -8,11 +8,11 @@ inventory checks, and prescription management via streaming chat.
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from apps.api.agent import create_pharmacy_agent, stream_agent_response
+from apps.api.agent import get_pharmacy_agent, stream_agent_response
 from apps.api.config import get_settings
 from apps.api.logging_config import get_logger, setup_logging
 from apps.api.schemas import ChatRequest, HealthResponse
@@ -123,6 +123,12 @@ async def chat_stream(request: ChatRequest) -> StreamingResponse:
     - error: Any errors that occur
     - done: Marks end of stream
     """
+    # Validate API key is configured (moved from config init for test compatibility)
+    if not settings.openai_api_key:
+        raise HTTPException(
+            status_code=500, detail="OPENAI_API_KEY is not configured"
+        )
+
     # Initialize trace context for request correlation
     trace_ctx = TraceContext(user_id=request.user_identifier)
 
@@ -137,11 +143,16 @@ async def chat_stream(request: ChatRequest) -> StreamingResponse:
         {"role": msg.role.value, "content": msg.content} for msg in request.messages
     ]
 
-    # Create agent with optional user context for prescriptions
-    agent = create_pharmacy_agent(user_identifier=request.user_identifier)
+    # Get pre-compiled agent (compiled once at startup, not per-request)
+    agent = get_pharmacy_agent()
 
     return StreamingResponse(
-        stream_agent_response(agent=agent, messages=messages, trace_ctx=trace_ctx),
+        stream_agent_response(
+            agent=agent,
+            messages=messages,
+            trace_ctx=trace_ctx,
+            user_identifier=request.user_identifier,
+        ),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

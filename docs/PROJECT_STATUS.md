@@ -56,3 +56,22 @@
 - [x] UI to interact with the agent
 - [x] At least 3 distinct multi-step flows (docs/FLOWS.md)
 - [x] Policy enforcement (facts-only, no medical advice)
+
+## Post-Review Improvements
+
+Based on code review feedback, the following production-readiness improvements were implemented:
+
+### Architecture
+- [x] **Agent singleton pattern**: LangGraph agent now compiled once at startup instead of per-request, reducing overhead
+- [x] **API key validation moved**: Validation moved from config init to endpoint, allowing tests to run without API key
+
+### Robustness
+- [x] **Streaming chunk parsing hardened**: Added `_extract_chunk_text()` helper to handle various content formats (string, list of strings, list of content-part dicts)
+- [x] **CancelledError handling**: Explicit handling prevents client disconnects from polluting error logs
+
+### Documentation
+- [x] **README SSE format fixed**: Corrected payload structure to match actual implementation
+- [x] **Testing section added**: Documented pytest and auto-eval commands
+
+### Evaluation
+- [x] **Automated evaluation script**: Added `scripts/run_eval.py` with LLM-as-Judge pattern for verifying agent behavior

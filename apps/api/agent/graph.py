@@ -1,10 +1,10 @@
-"""LangGraph pharmacy agent definition."""
+"""LangGraph pharmacy agent definition - compiled once at startup."""
 
 from langchain_core.messages import SystemMessage
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 
-from apps.api.agent.prompts import get_system_prompt
+from apps.api.agent.prompts import PHARMACY_AGENT_SYSTEM_PROMPT
 from apps.api.config import get_settings
 from apps.api.logging_config import get_logger
 from apps.api.tools import PHARMACY_TOOLS
@@ -12,26 +12,27 @@ from apps.api.tools import PHARMACY_TOOLS
 logger = get_logger(__name__)
 
 
-def create_pharmacy_agent(user_identifier: str | None = None):
+def _build_pharmacy_agent():
     """
-    Create the pharmacy agent graph.
+    Build and compile the pharmacy agent graph.
 
-    Uses LangGraph's prebuilt ReAct agent pattern with:
-    - OpenAI LLM (model configurable via OPENAI_MODEL env var)
-    - The 3 pharmacy tools (medication, inventory, prescription)
-    - System prompt for policy enforcement and bilingual support
-
-    Args:
-        user_identifier: Optional user email/phone for prescription context
+    Called once at module initialization. The compiled graph is reused
+    for all requests. User-specific context (user_identifier) is injected
+    at runtime by prepending to the conversation messages.
 
     Returns:
-        Compiled LangGraph agent
+        Compiled LangGraph agent, or None if API key not configured
     """
     settings = get_settings()
-    # Log the model and API key
-    logger.info(f"Creating pharmacy agent with model: {settings.openai_model}")
 
-    # Initialize LLM with streaming (model configurable via env)
+    # Skip compilation if no API key (allows tests to import without failing)
+    if not settings.openai_api_key:
+        logger.warning("OPENAI_API_KEY not set - agent will fail at runtime")
+        return None
+
+    logger.info(f"Compiling pharmacy agent with model: {settings.openai_model}")
+
+    # Initialize LLM with streaming (created once, reused for all requests)
     llm = ChatOpenAI(
         model=settings.openai_model,
         api_key=settings.openai_api_key,
@@ -39,26 +40,49 @@ def create_pharmacy_agent(user_identifier: str | None = None):
         streaming=True,
     )
 
-    # Get system prompt with optional user context
-    system_prompt = get_system_prompt(user_identifier)
-
-    # Create agent with compatibility fallback for different LangGraph versions
-    # Some versions accept prompt=, others want state_modifier
+    # Create agent with base system prompt
+    # User-specific context is injected at runtime via messages
     try:
-        return create_react_agent(
+        agent = create_react_agent(
             model=llm,
             tools=PHARMACY_TOOLS,
-            prompt=system_prompt,
+            prompt=PHARMACY_AGENT_SYSTEM_PROMPT,
         )
     except TypeError:
         # Fallback for older LangGraph versions that use state_modifier
         def state_modifier(state):
             return {
-                "messages": [SystemMessage(content=system_prompt)] + state["messages"]
+                "messages": [
+                    SystemMessage(content=PHARMACY_AGENT_SYSTEM_PROMPT)
+                ] + state["messages"]
             }
 
-        return create_react_agent(
+        agent = create_react_agent(
             model=llm,
             tools=PHARMACY_TOOLS,
             state_modifier=state_modifier,
         )
+
+    logger.info("Pharmacy agent compiled successfully")
+    return agent
+
+
+# Compile agent once at module initialization
+_pharmacy_agent = _build_pharmacy_agent()
+
+
+def get_pharmacy_agent():
+    """
+    Get the pre-compiled pharmacy agent.
+
+    Returns:
+        The singleton compiled agent instance
+
+    Raises:
+        RuntimeError: If agent was not compiled (missing API key)
+    """
+    if _pharmacy_agent is None:
+        raise RuntimeError(
+            "Pharmacy agent not compiled. Ensure OPENAI_API_KEY is configured."
+        )
+    return _pharmacy_agent

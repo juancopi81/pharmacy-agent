@@ -1,9 +1,10 @@
 """SSE streaming adapter for LangGraph agent events."""
 
+import asyncio
 import json
 from typing import Any, AsyncGenerator
 
-from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
+from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage, SystemMessage
 
 from apps.api.logging_config import get_logger
 from apps.api.schemas import StreamEventType
@@ -37,10 +38,40 @@ def convert_messages(messages: list[dict]) -> list[HumanMessage | AIMessage]:
     return lc_messages
 
 
+def _extract_chunk_text(content: Any) -> str:
+    """
+    Extract text from various chunk content formats.
+
+    Handles string content, list of strings, and list of content part dicts
+    (e.g., {"type": "text", "text": "..."} or {"text": "..."}).
+
+    Args:
+        content: Chunk content in various formats
+
+    Returns:
+        Extracted text as a string
+    """
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts: list[str] = []
+        for item in content:
+            if isinstance(item, str):
+                parts.append(item)
+            elif isinstance(item, dict):
+                # Handle content part dicts: {"type":"text","text":"..."} or {"text":"..."}
+                txt = item.get("text")
+                if isinstance(txt, str):
+                    parts.append(txt)
+        return "".join(parts)
+    return ""
+
+
 async def stream_agent_response(
     agent: Any,
     messages: list[dict],
     trace_ctx: TraceContext | None = None,
+    user_identifier: str | None = None,
 ) -> AsyncGenerator[str, None]:
     """
     Stream agent response as SSE events.
@@ -56,12 +87,23 @@ async def stream_agent_response(
         agent: Compiled LangGraph agent
         messages: Conversation history as list of dicts
         trace_ctx: Optional trace context for request correlation and timing
+        user_identifier: Optional user email/phone for prescription context
 
     Yields:
         SSE formatted event strings
     """
     # Convert messages to LangChain format
     lc_messages = convert_messages(messages)
+
+    # Inject user context as a system message if user_identifier is provided
+    # This is prepended to the conversation so the agent knows who it's helping
+    if user_identifier:
+        user_context = SystemMessage(
+            content=f"## User Context\n"
+            f"The current user's identifier for prescription lookups is: {user_identifier}\n"
+            f"Use this identifier when calling the prescription_management tool."
+        )
+        lc_messages = [user_context] + lc_messages
 
     # Map LangGraph run_id -> TraceContext call_id (handles overlapping/nested calls)
     active_calls: dict[str, int] = {}
@@ -80,12 +122,8 @@ async def stream_agent_response(
             if kind == "on_chat_model_stream":
                 chunk = event.get("data", {}).get("chunk")
                 if isinstance(chunk, AIMessageChunk) and chunk.content:
-                    # Handle content that may be string or list
-                    text = (
-                        chunk.content
-                        if isinstance(chunk.content, str)
-                        else "".join(chunk.content)
-                    )
+                    # Handle content that may be string, list of strings, or list of dicts
+                    text = _extract_chunk_text(chunk.content)
                     if text:
                         yield format_sse_event(StreamEventType.TOKEN, {"text": text})
 
@@ -158,6 +196,11 @@ async def stream_agent_response(
 
         # Send done event
         yield format_sse_event(StreamEventType.DONE, {})
+
+    except asyncio.CancelledError:
+        # Client disconnected - don't treat as error, just clean up
+        logger.info("SSE stream cancelled by client")
+        raise
 
     except Exception as e:
         # Record stream-level error
