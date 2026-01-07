@@ -30,6 +30,7 @@ docker run --env-file .env -p 8000:8000 pharmacy-agent
 | 3 Multi-step flows  | Complete customer journeys from request to resolution       |
 | Policy enforcement  | Facts-only responses, refuses medical advice                |
 | Stateless           | Client sends conversation history each turn                 |
+| Request tracing     | Correlation IDs, tool timing, and structured JSON logs      |
 
 ---
 
@@ -182,14 +183,15 @@ pharmacy-agent/
 │   │   ├── agent/              # LangGraph agent + streaming
 │   │   │   ├── graph.py        # Agent creation
 │   │   │   ├── prompts.py      # System prompts
-│   │   │   └── streaming.py    # SSE adapter
+│   │   │   └── streaming.py    # SSE adapter + tracing hooks
 │   │   ├── tools/              # 3 pharmacy tools
 │   │   │   ├── medication.py   # get_medication_by_name
 │   │   │   ├── inventory.py    # check_inventory
 │   │   │   └── prescription.py # prescription_management
 │   │   ├── main.py             # FastAPI app
 │   │   ├── config.py           # Settings
-│   │   └── database.py         # DB helpers
+│   │   ├── database.py         # DB helpers
+│   │   └── tracing.py          # Request tracing (correlation IDs, timing)
 │   └── web/                    # Static chat UI
 │       ├── index.html
 │       ├── app.js
@@ -205,7 +207,8 @@ pharmacy-agent/
 ├── scripts/
 │   └── seed_db.py              # Database seeding
 ├── tests/
-│   └── test_tools/             # 24 unit tests
+│   ├── test_tools/             # 24 tool unit tests
+│   └── test_tracing.py         # 14 tracing tests
 ├── pyproject.toml              # Dependencies (uv)
 └── Dockerfile                  # Container build
 ```
@@ -292,11 +295,12 @@ uv run uvicorn apps.api.main:app --reload --port 8000
 ## Run Tests
 
 ```bash
-# Run all unit tests (24 tests)
+# Run all tests (38 tests: 24 tool + 14 tracing)
 uv run pytest
 
 # Run specific test file
 uv run pytest tests/test_tools/test_medication.py -v
+uv run pytest tests/test_tracing.py -v
 ```
 
 ---
@@ -316,7 +320,13 @@ Streaming chat endpoint for conversational AI interactions.
 }
 ```
 
-**Response:** Server-Sent Events stream
+**Response Headers:**
+
+| Header         | Description                                      |
+| -------------- | ------------------------------------------------ |
+| `X-Request-ID` | UUID for correlating logs (e.g., `5460a6ac-...`) |
+
+**Response Body:** Server-Sent Events stream
 
 ```
 data: {"type": "token", "content": "Here's"}
@@ -324,6 +334,26 @@ data: {"type": "token", "content": " what"}
 data: {"type": "tool_call", "name": "get_medication_by_name", "args": {...}}
 data: {"type": "tool_result", "name": "get_medication_by_name", "result": {...}}
 data: {"type": "done"}
+```
+
+**Server Log (at request completion):**
+
+```json
+{
+  "event": "request_complete",
+  "request_id": "5460a6ac-...",
+  "tools_called": ["get_medication_by_name"],
+  "tool_details": [
+    {
+      "call_id": 1,
+      "tool": "get_medication_by_name",
+      "latency_ms": 5.83,
+      "status": "success"
+    }
+  ],
+  "total_latency_ms": 12015.13,
+  "success": true
+}
 ```
 
 ---
@@ -346,7 +376,9 @@ This MVP demonstrates core functionality. Potential next steps for production de
 
 ### Observability
 
-- **Structured Traces**: Add LangSmith for distributed tracing across tool calls and LLM interactions
+> **Already implemented:** Basic request tracing with correlation IDs (`X-Request-ID`), tool timing, and structured JSON logs.
+
+- **LangSmith Integration**: Add LangSmith for distributed tracing across tool calls and LLM interactions
 - **Metrics Dashboard**: Track token usage, latency percentiles, error rates, and flow completion rates
 - **Cost Monitoring**: Log and analyze per-conversation token costs
 
