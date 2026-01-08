@@ -36,7 +36,7 @@ docker run --env-file .env -p 8000:8000 pharmacy-agent
 
 ## Quick Demo
 
-### Bilingual Interface
+### Bilingual Support
 
 ![Bilingual UI](docs/screenshots/multilingual_support.png)
 _Language (EN/עב) and bilingual placeholder text_
