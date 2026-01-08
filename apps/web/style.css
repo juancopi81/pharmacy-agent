@@ -215,6 +215,23 @@ body {
     font-weight: 500;
 }
 
+/* Language Badge */
+.lang-badge {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: var(--stone-100);
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
 /* ========================================
    Chat Container
    ======================================== */
