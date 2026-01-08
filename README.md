@@ -34,6 +34,26 @@ docker run --env-file .env -p 8000:8000 pharmacy-agent
 
 ---
 
+## Quick Demo
+
+### Bilingual Interface
+![Bilingual UI](docs/screenshots/multilingual_support.png)
+*Language toggle (EN/עב) and bilingual placeholder text*
+
+### Tool Calling & Medication Info
+![Tool Activity](docs/screenshots/test_A1_medication_info_en_show_activity.png)
+*"Show activity" toggle reveals tool calls and JSON responses*
+
+### Hebrew Language Support
+![Hebrew Response](docs/screenshots/test_A2_medication_info_he.png)
+*Agent responds in Hebrew when queried in Hebrew*
+
+### Policy Enforcement
+![Policy Refusal](docs/screenshots/test_P1_policy_refusal.png)
+*Agent refuses medical advice, redirects to healthcare professional*
+
+---
+
 ## Multi-Step Flows
 
 The agent executes three distinct multi-step flows, each representing a complete customer journey:
@@ -107,21 +127,21 @@ See [docs/EVAL_PLAN.md](docs/EVAL_PLAN.md) for full evaluation methodology.
 
 ---
 
-## Screenshots (Evidence)
+## All Screenshots
 
-Screenshots demonstrating all flows are in `docs/screenshots/`:
+> Key screenshots are shown in [Quick Demo](#quick-demo) above. Full list in `docs/screenshots/`:
 
-| Screenshot                                     | Description                                                     |
-| ---------------------------------------------- | --------------------------------------------------------------- |
-| `test_A1_medication_info_en_no_activity.png`   | English medication lookup (Ibuprofen)                           |
-| `test_A1_medication_info_en_show_activity.png` | English medication lookup (Ibuprofen) - Shows internal activity |
-| `test_A2_medication_info_he.png`               | Hebrew medication lookup (Cetirizine)                           |
-| `test_A3_medication_not_found_en.png`          | English medication lookup (XYZMed) - Not found                  |
-| `test_B1_inventory_en.png`                     | English inventory check (in-stock + Quantity)                   |
-| `test_B2_inventory_he.png`                     | Hebrew inventory check (out-of-stock + ETA)                     |
-| `test_C1_prescription_flow.png`                | Multi-turn prescription flow                                    |
-| `test_P1_policy_refusal.png`                   | Policy enforcement (refuses medical advice)                     |
-| `test_P2_policy_comparison.png`                | Policy enforcement (refuses comparative advice)                 |
+| Screenshot | Description |
+|------------|-------------|
+| `multilingual_support.png` | Bilingual UI with language toggle |
+| `test_A1_medication_info_en_*.png` | English medication lookup (with/without activity) |
+| `test_A2_medication_info_he.png` | Hebrew medication lookup |
+| `test_A3_medication_not_found_en.png` | NOT_FOUND error handling |
+| `test_B1_inventory_en.png` | In-stock inventory check |
+| `test_B2_inventory_he.png` | Out-of-stock with ETA (Hebrew) |
+| `test_C1_prescription_flow.png` | Multi-turn prescription flow |
+| `test_P1_policy_refusal.png` | Policy enforcement (refuses advice) |
+| `test_P2_policy_comparison.png` | Policy enforcement (refuses comparisons) |
 
 ---
 
