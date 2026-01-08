@@ -37,20 +37,24 @@ docker run --env-file .env -p 8000:8000 pharmacy-agent
 ## Quick Demo
 
 ### Bilingual Interface
+
 ![Bilingual UI](docs/screenshots/multilingual_support.png)
-*Language toggle (EN/עב) and bilingual placeholder text*
+_Language (EN/עב) and bilingual placeholder text_
 
 ### Tool Calling & Medication Info
+
 ![Tool Activity](docs/screenshots/test_A1_medication_info_en_show_activity.png)
-*"Show activity" toggle reveals tool calls and JSON responses*
+_"Show activity" toggle reveals tool calls and JSON responses_
 
 ### Hebrew Language Support
+
 ![Hebrew Response](docs/screenshots/test_A2_medication_info_he.png)
-*Agent responds in Hebrew when queried in Hebrew*
+_Agent responds in Hebrew when queried in Hebrew_
 
 ### Policy Enforcement
+
 ![Policy Refusal](docs/screenshots/test_P1_policy_refusal.png)
-*Agent refuses medical advice, redirects to healthcare professional*
+_Agent refuses medical advice, redirects to healthcare professional_
 
 ---
 
@@ -131,17 +135,17 @@ See [docs/EVAL_PLAN.md](docs/EVAL_PLAN.md) for full evaluation methodology.
 
 > Key screenshots are shown in [Quick Demo](#quick-demo) above. Full list in `docs/screenshots/`:
 
-| Screenshot | Description |
-|------------|-------------|
-| `multilingual_support.png` | Bilingual UI with language toggle |
-| `test_A1_medication_info_en_*.png` | English medication lookup (with/without activity) |
-| `test_A2_medication_info_he.png` | Hebrew medication lookup |
-| `test_A3_medication_not_found_en.png` | NOT_FOUND error handling |
-| `test_B1_inventory_en.png` | In-stock inventory check |
-| `test_B2_inventory_he.png` | Out-of-stock with ETA (Hebrew) |
-| `test_C1_prescription_flow.png` | Multi-turn prescription flow |
-| `test_P1_policy_refusal.png` | Policy enforcement (refuses advice) |
-| `test_P2_policy_comparison.png` | Policy enforcement (refuses comparisons) |
+| Screenshot                            | Description                                       |
+| ------------------------------------- | ------------------------------------------------- |
+| `multilingual_support.png`            | Bilingual UI with language toggle                 |
+| `test_A1_medication_info_en_*.png`    | English medication lookup (with/without activity) |
+| `test_A2_medication_info_he.png`      | Hebrew medication lookup                          |
+| `test_A3_medication_not_found_en.png` | NOT_FOUND error handling                          |
+| `test_B1_inventory_en.png`            | In-stock inventory check                          |
+| `test_B2_inventory_he.png`            | Out-of-stock with ETA (Hebrew)                    |
+| `test_C1_prescription_flow.png`       | Multi-turn prescription flow                      |
+| `test_P1_policy_refusal.png`          | Policy enforcement (refuses advice)               |
+| `test_P2_policy_comparison.png`       | Policy enforcement (refuses comparisons)          |
 
 ---
 
