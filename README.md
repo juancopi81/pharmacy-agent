@@ -457,3 +457,9 @@ The current implementation provides a foundation for automated quality assurance
 | [docs/FLOWS.md](docs/FLOWS.md)                   | Multi-step flows + **Tool Specifications** (inputs, outputs, errors, fallback) |
 | [docs/EVAL_PLAN.md](docs/EVAL_PLAN.md)           | Evaluation methodology + test cases                                            |
 | [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Implementation progress tracking                                               |
+
+---
+
+## Acknowledgments
+
+This project was developed with assistance from [Claude Code](https://claude.ai/code) (Anthropic's AI coding assistant), as permitted by the assignment guidelines. All code has been reviewed, understood, and can be explained in detail.
