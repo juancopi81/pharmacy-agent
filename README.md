@@ -258,7 +258,7 @@ prescriptions(presc_id, user_id, med_id, refills_left, status)
 inventory(store_id, med_id, qty, restock_eta)
 ```
 
-For detailed tool behavior and edge cases, see [docs/FLOWS.md](docs/FLOWS.md). For implementation, see [`apps/api/tools/`](apps/api/tools/).
+**Tool Documentation:** For complete tool specifications (inputs, output schemas, error handling, fallback behavior), see [docs/FLOWS.md → Tool Specifications](docs/FLOWS.md#tool-specifications-required-documentation). For implementation, see [`apps/api/tools/`](apps/api/tools/).
 
 ```bash
 # Re-seed database
@@ -294,6 +294,7 @@ uv run python scripts/run_eval.py
 | Policy Adherence | "What medication should I take?" | Refuses medical advice, suggests consulting doctor |
 
 **Example output:**
+
 ```
 Testing: Medication Info - English
   Query: Tell me about Ibuprofen...
@@ -430,9 +431,9 @@ The current implementation provides a foundation for automated quality assurance
 
 ## Documentation
 
-| Document                                         | Description                               |
-| ------------------------------------------------ | ----------------------------------------- |
-| [docs/PROJECT_SPEC.md](docs/PROJECT_SPEC.md)     | Full PRD + technical design               |
-| [docs/FLOWS.md](docs/FLOWS.md)                   | Multi-step flow definitions with examples |
-| [docs/EVAL_PLAN.md](docs/EVAL_PLAN.md)           | Evaluation methodology + test cases       |
-| [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Implementation progress tracking          |
+| Document                                         | Description                                                                    |
+| ------------------------------------------------ | ------------------------------------------------------------------------------ |
+| [docs/PROJECT_SPEC.md](docs/PROJECT_SPEC.md)     | Full PRD + technical design                                                    |
+| [docs/FLOWS.md](docs/FLOWS.md)                   | Multi-step flows + **Tool Specifications** (inputs, outputs, errors, fallback) |
+| [docs/EVAL_PLAN.md](docs/EVAL_PLAN.md)           | Evaluation methodology + test cases                                            |
+| [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Implementation progress tracking                                               |
